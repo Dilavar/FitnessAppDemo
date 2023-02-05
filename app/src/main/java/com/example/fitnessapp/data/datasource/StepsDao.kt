@@ -2,21 +2,23 @@ package com.example.fitnessapp.data.datasource
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.fitnessapp.domain.model.Steps
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StepsDao {
 
-    @Query("Select * from STEPS_TABLE where date=:mDate")
-    fun getDaySteps(mDate: String): List<Steps>
+    @Query("Select * from STEPS_TABLE where timeStamp BETWEEN :startTime AND :endTime")
+    fun getDaySteps(startTime: Long, endTime: Long): List<Steps>
 
-    @Query("Select * from STEPS_TABLE WHERE date BETWEEN :startDate AND :endDate")
-    fun getWeekSteps(startDate: String, endDate: String): Flow<List<Steps>>
+    @Query("Select sum(steps) as steps ,steps_table.date,timeStamp,id  FROM steps_table  WHERE timeStamp GROUP by date")
+    fun getWeekSteps(): List<Steps>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertSteps(steps: Steps)
+    @Insert()
+    suspend fun insertSteps(steps: List<Steps>)
+
+    @Insert()
+    suspend fun insertStep(steps: Steps)
+
 
 }

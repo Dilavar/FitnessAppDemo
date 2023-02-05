@@ -6,6 +6,8 @@ import com.example.fitnessapp.data.datasource.FitnessDatabase
 import com.example.fitnessapp.data.repository.StepRepositoryImpl
 import com.example.fitnessapp.domain.repository.StepsRepository
 import com.example.fitnessapp.domain.use_cases.GetDayStepsUseCase
+import com.example.fitnessapp.domain.use_cases.GetWeekStepsUseCase
+import com.example.fitnessapp.domain.use_cases.InserDummyStepsUsecase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,14 +30,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideStepRepository(db:FitnessDatabase):StepsRepository{
+    fun provideStepRepository(db: FitnessDatabase): StepsRepository {
         return StepRepositoryImpl(db.stepsDao)
     }
 
     @Provides
     @Singleton
-    fun provideStepUseCase(repository: StepsRepository):GetDayStepsUseCase{
+    fun provideStepUseCase(repository: StepsRepository): GetDayStepsUseCase {
         return GetDayStepsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDummyDataUseCase(repository: StepsRepository): InserDummyStepsUsecase {
+        return InserDummyStepsUsecase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeekStepDataUseCase(repository: StepsRepository): GetWeekStepsUseCase {
+        return GetWeekStepsUseCase(repository)
     }
 
 }
