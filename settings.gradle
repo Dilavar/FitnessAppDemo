@@ -3,6 +3,13 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        resolutionStrategy {
+            eachPlugin {
+                if( requested.id.id == 'dagger.hilt.android.plugin') {
+                    useModule("com.google.dagger:hilt-android-gradle-plugin:2.44.2")
+                }
+            }
+        }
     }
 }
 dependencyResolutionManagement {
@@ -11,6 +18,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+
     }
 }
 rootProject.name = "FitnessApp"

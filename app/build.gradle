@@ -1,12 +1,14 @@
 plugins {
+
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-
+    id 'com.google.dagger.hilt.android'
 }
 
 
 android {
+
     compileSdk 33
 
     defaultConfig {
@@ -15,11 +17,12 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-
+    defaultConfig {
+        multiDexEnabled true
+    }
 
     buildTypes {
         release {
@@ -27,13 +30,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
+}
+
+project.ext {
+    compileSdkVersion = 18
 }
 
 dependencies {
@@ -45,10 +54,37 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation 'com.google.dagger:hilt-android-testing:2.44.2'
+    testAnnotationProcessor 'com.google.dagger:hilt-compiler:2.44.2'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation "com.google.dagger:hilt-android:2.44"
+    implementation "com.google.dagger:hilt-android:2.44.2"
+    implementation 'com.google.dagger:hilt-android:2.44.2'
+    annotationProcessor 'com.google.dagger:hilt-compiler:2.44.2'
     kapt "com.google.dagger:hilt-compiler:2.44"
+
+
+    // Room components
+    implementation "androidx.room:room-ktx:$rootProject.roomVersion"
+    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
+
+    // Lifecycle components
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.lifecycleVersion"
+
+    // Kotlin components
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutines"
+    implementation "androidx.hilt:hilt-navigation-fragment:1.0.0"
+
+    implementation "androidx.compose.ui:ui:$rootProject.compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$rootProject.compose_version"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$rootProject.compose_version"
+
 }
+
 kapt {
     correctErrorTypes true
 }
