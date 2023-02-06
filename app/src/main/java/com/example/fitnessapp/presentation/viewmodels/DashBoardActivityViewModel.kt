@@ -30,6 +30,10 @@ class DashBoardActivityViewModel @Inject constructor(
     private val _state = MutableStateFlow(StepsState())
     var state = _state
 
+
+    private val _weeklyDatastate = MutableStateFlow(StepsState())
+    var weeklyDatastate = _weeklyDatastate
+
     private val _stateInsertDummyData = MutableStateFlow(DummyDataInsertState())
     var stateInsertDummyData = _stateInsertDummyData
 
@@ -70,13 +74,13 @@ class DashBoardActivityViewModel @Inject constructor(
             getWeekStepsUseCase(0, 0).collectLatest { result ->
                 when (result) {
                     is Resource.Success -> {
-                        _state.value = StepsState(steps = result.data)
+                        _weeklyDatastate.value = StepsState(steps = result.data)
                     }
                     is Resource.Loading -> {
-                        _state.value = StepsState(isLoading = true)
+                        _weeklyDatastate.value = StepsState(isLoading = true)
                     }
                     is Resource.Error -> {
-                        _state.value = StepsState(error = result.message.toString())
+                        _weeklyDatastate.value = StepsState(error = result.message.toString())
                     }
 
                 }
