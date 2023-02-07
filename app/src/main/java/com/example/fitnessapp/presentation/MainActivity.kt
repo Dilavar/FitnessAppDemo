@@ -261,8 +261,7 @@ class MainActivity : ComponentActivity() {
         val yVals1: MutableList<BarEntry> = ArrayList()
         var j = 0
         for (i in list.sortedBy { it.timeStamp }) {
-            j += 1
-            yVals1.add(BarEntry(j.toFloat(), i.steps.toFloat()))
+            yVals1.add(BarEntry(i.week.toFloat(), i.steps.toFloat()))
         }
         val set1: BarDataSet
         if (barChart?.data != null && barChart?.data!!.dataSetCount > 0) {

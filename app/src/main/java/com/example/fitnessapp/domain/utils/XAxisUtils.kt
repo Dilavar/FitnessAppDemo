@@ -30,8 +30,8 @@ object XAxisUtils {
         var map = HashMap<Int, String>()
         map[0] = "Week 1"
         map[1] = "Week 2"
-        map[2] = "Week 3"
-        map[3] = "Week 4"
+        map[3] = "Week 3"
+        map[4] = "Week 4"
         return map.get(key) ?: "NA"
     }
 }
