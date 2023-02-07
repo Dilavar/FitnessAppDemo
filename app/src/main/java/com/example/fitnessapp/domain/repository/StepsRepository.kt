@@ -8,6 +8,8 @@ interface StepsRepository {
 
     suspend fun getWeekSteps(startDate: Long, endDate: Long): List<Steps>
 
+    suspend fun getTotalWeekSteps(startDate: Long, endDate: Long): List<Steps>
+
     suspend fun insertSteps(steps: List<Steps>)
 
     suspend fun insertStep(steps: Steps)

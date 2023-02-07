@@ -3,6 +3,7 @@ package com.example.fitnessapp.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import com.example.fitnessapp.common.Resource
 import com.example.fitnessapp.domain.use_cases.GetDayStepsUseCase
+import com.example.fitnessapp.domain.use_cases.GetMonthsWeekStepsUseCase
 import com.example.fitnessapp.domain.use_cases.GetWeekStepsUseCase
 import com.example.fitnessapp.domain.use_cases.InserDummyStepsUsecase
 import com.example.fitnessapp.domain.utils.DummyDataInsertState
@@ -22,7 +23,8 @@ import kotlin.random.Random
 class DashBoardActivityViewModel @Inject constructor(
     val stepsUseCase: GetDayStepsUseCase,
     val stepsDummyStepsUsecase: InserDummyStepsUsecase,
-    val getWeekStepsUseCase: GetWeekStepsUseCase
+    val getWeekStepsUseCase: GetWeekStepsUseCase,
+    val getMonthsWeekStepsUseCase: GetMonthsWeekStepsUseCase
 ) :
     ViewModel() {
 
@@ -33,6 +35,9 @@ class DashBoardActivityViewModel @Inject constructor(
 
     private val _weeklyDatastate = MutableStateFlow(StepsState())
     var weeklyDatastate = _weeklyDatastate
+
+    private val _monthWeekDatastate = MutableStateFlow(StepsState())
+    var monthWeekDatastate = _monthWeekDatastate
 
     private val _stateInsertDummyData = MutableStateFlow(DummyDataInsertState())
     var stateInsertDummyData = _stateInsertDummyData
@@ -47,7 +52,7 @@ class DashBoardActivityViewModel @Inject constructor(
             var endCal = Calendar.getInstance()
             endCal.set(Calendar.HOUR_OF_DAY, 23)
             endCal.set(Calendar.MINUTE, 59)
-            endCal.set(Calendar.SECOND, 59  )
+            endCal.set(Calendar.SECOND, 59)
 
             stepsUseCase(cal.timeInMillis, endCal.timeInMillis).collectLatest { result ->
                 when (result) {
@@ -69,9 +74,7 @@ class DashBoardActivityViewModel @Inject constructor(
 
     fun getWeekSteps() {
         CoroutineScope(Dispatchers.IO).launch {
-
-
-            getWeekStepsUseCase(0, 0).collectLatest { result ->
+            getWeekStepsUseCase(0,0).collectLatest { result ->
                 when (result) {
                     is Resource.Success -> {
                         _weeklyDatastate.value = StepsState(steps = result.data)
@@ -82,12 +85,33 @@ class DashBoardActivityViewModel @Inject constructor(
                     is Resource.Error -> {
                         _weeklyDatastate.value = StepsState(error = result.message.toString())
                     }
-
                 }
             }
         }
-        Random(1000)
     }
+
+    fun getMonthSteps() {
+        CoroutineScope(Dispatchers.IO).launch {
+            getMonthsWeekStepsUseCase().collectLatest { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _monthWeekDatastate.value = StepsState(steps = result.data)
+                    }
+                    is Resource.Error -> {
+                        _monthWeekDatastate.value =
+                            StepsState(error = result.message ?: "Something went wrong")
+                    }
+                    is Resource.Loading -> {
+                        _monthWeekDatastate.value = StepsState(isLoading = true)
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
 
     fun insertDummySteps() {
         CoroutineScope(Dispatchers.IO).launch {

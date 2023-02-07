@@ -25,4 +25,13 @@ object XAxisUtils {
         map[6] = "Sat"
         return map.get(key) ?: "NA"
     }
+
+    fun getMonthWeeksUtils(key: Int): String {
+        var map = HashMap<Int, String>()
+        map[0] = "Week 1"
+        map[1] = "Week 2"
+        map[2] = "Week 3"
+        map[3] = "Week 4"
+        return map.get(key) ?: "NA"
+    }
 }

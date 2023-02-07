@@ -6,6 +6,7 @@ import com.example.fitnessapp.data.datasource.FitnessDatabase
 import com.example.fitnessapp.data.repository.StepRepositoryImpl
 import com.example.fitnessapp.domain.repository.StepsRepository
 import com.example.fitnessapp.domain.use_cases.GetDayStepsUseCase
+import com.example.fitnessapp.domain.use_cases.GetMonthsWeekStepsUseCase
 import com.example.fitnessapp.domain.use_cases.GetWeekStepsUseCase
 import com.example.fitnessapp.domain.use_cases.InserDummyStepsUsecase
 import dagger.Module
@@ -50,6 +51,12 @@ object AppModule {
     @Singleton
     fun provideWeekStepDataUseCase(repository: StepsRepository): GetWeekStepsUseCase {
         return GetWeekStepsUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMonthStepDataUseCase(repository: StepsRepository): GetMonthsWeekStepsUseCase {
+        return GetMonthsWeekStepsUseCase(repository)
     }
 
 }

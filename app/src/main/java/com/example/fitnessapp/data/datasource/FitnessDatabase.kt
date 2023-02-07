@@ -6,7 +6,7 @@ import com.example.fitnessapp.domain.model.Steps
 
 @Database(
     entities = [Steps::class],
-    version = 1
+    version = 2
 )
 abstract class FitnessDatabase : RoomDatabase() {
     abstract val stepsDao: StepsDao

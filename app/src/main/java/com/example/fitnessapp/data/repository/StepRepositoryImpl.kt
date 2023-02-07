@@ -14,6 +14,10 @@ class StepRepositoryImpl(val dao: StepsDao) : StepsRepository {
         return dao.getWeekSteps()
     }
 
+    override suspend fun getTotalWeekSteps(startDate: Long, endDate: Long): List<Steps> {
+        return dao.getMonthWeeks()
+    }
+
     override suspend fun insertSteps(steps: List<Steps>) {
         dao.insertSteps(steps)
     }

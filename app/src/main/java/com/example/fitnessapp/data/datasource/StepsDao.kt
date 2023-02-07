@@ -11,8 +11,12 @@ interface StepsDao {
     @Query("Select * from STEPS_TABLE where timeStamp BETWEEN :startTime AND :endTime")
     fun getDaySteps(startTime: Long, endTime: Long): List<Steps>
 
-    @Query("Select sum(steps) as steps ,steps_table.date,timeStamp,id  FROM steps_table  WHERE timeStamp GROUP by date")
+    @Query("Select sum(steps) as steps ,steps_table.date,timeStamp,id,week  FROM steps_table  WHERE timeStamp  GROUP by date")
     fun getWeekSteps(): List<Steps>
+
+
+    @Query("Select sum(steps) as steps ,steps_table.date,timeStamp,id,week  FROM steps_table  Group by week")
+    fun getMonthWeeks(): List<Steps>
 
     @Insert()
     suspend fun insertSteps(steps: List<Steps>)

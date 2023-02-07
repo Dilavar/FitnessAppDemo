@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
         initBarChart()
         initStepsFlow()
         initWeeklyStepFlow()
+        initMonthStepsFlow()
         viewModel.getSteps()
     }
 
@@ -52,7 +53,7 @@ class MainActivity : ComponentActivity() {
         barChart?.setDrawGridBackground(false)
         barChart?.setBackgroundResource(android.R.drawable.screen_background_light_transparent)
         barChart?.xAxis?.setAxisMinValue(0f);
-        barChart?.xAxis?.setLabelCount(7, /*force: */true)
+
         barChart?.axisRight?.isEnabled = false
         barChart?.axisLeft?.isEnabled = true
         barChart?.description?.isEnabled = false
@@ -60,8 +61,8 @@ class MainActivity : ComponentActivity() {
         leftAxis?.setDrawGridLines(true)
         leftAxis?.labelCount = 3
         leftAxis?.spaceTop = 50f
-        leftAxis?.spaceMax=50f
-        leftAxis?.spaceMin=50f
+        leftAxis?.spaceMax = 50f
+        leftAxis?.spaceMin = 50f
     }
 
     private fun initWeeklyStepFlow() {
@@ -71,6 +72,26 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this@MainActivity, "LOADING STEPS", Toast.LENGTH_LONG).show()
                 } else if (it.steps?.isNotEmpty() == true) {
                     initWeekBarChart(it.steps)
+                } else if (it.error.isNotEmpty()) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Some thing went wrong! ",
+                        Toast.LENGTH_LONG
+                    ).show()
+//                        viewModel.insertDummySteps()
+
+                }
+            }
+        }
+    }
+
+    private fun initMonthStepsFlow() {
+        CoroutineScope(Dispatchers.Main).launch {
+            viewModel.monthWeekDatastate.collectLatest {
+                if (it.isLoading) {
+                    Toast.makeText(this@MainActivity, "LOADING STEPS", Toast.LENGTH_LONG).show()
+                } else if (it.steps?.isNotEmpty() == true) {
+                    initMonthBarChart(it.steps)
                 } else if (it.error.isNotEmpty()) {
                     Toast.makeText(
                         this@MainActivity,
@@ -115,12 +136,17 @@ class MainActivity : ComponentActivity() {
             tabLayout.newTab().setId(Constants.WEEK)
                 .setText(resources.getText(R.string.tab_title_week))
         );
+        tabLayout.addTab(
+            tabLayout.newTab().setId(Constants.MONTH)
+                .setText(resources.getText(R.string.tab_title_mont))
+        );
         tabLayout.tabGravity = TabLayout.GRAVITY_CENTER;
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.id) {
                     Constants.DAY -> viewModel.getSteps()
                     Constants.WEEK -> viewModel.getWeekSteps()
+                    Constants.MONTH -> viewModel.getMonthSteps()
                 }
             }
 
@@ -136,6 +162,7 @@ class MainActivity : ComponentActivity() {
 
 
     private fun initWeekBarChart(list: List<Steps>) {
+        barChart?.xAxis?.setLabelCount(7, /*force: */true)
         val xl = barChart?.xAxis
         xl?.position = XAxis.XAxisPosition.BOTTOM
         xl?.setDrawGridLines(false)
@@ -180,6 +207,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun initDayBarChart(list: List<Steps>) {
+        barChart?.xAxis?.setLabelCount(7, /*force: */true)
         val xl = barChart?.xAxis
         xl?.granularity = 1f
         xl?.position = XAxis.XAxisPosition.BOTTOM
@@ -217,5 +245,48 @@ class MainActivity : ComponentActivity() {
         barChart?.invalidate()
         barChart?.animateXY(1000, 3000)
     }
+
+    private fun initMonthBarChart(list: List<Steps>) {
+        barChart?.xAxis?.setLabelCount(4, /*force: */true)
+        val xl = barChart?.xAxis
+        xl?.granularity = 1f
+        xl?.position = XAxis.XAxisPosition.BOTTOM
+        xl?.setCenterAxisLabels(false)
+        xl?.setDrawGridLines(false)
+        xl?.valueFormatter = object : IndexAxisValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return XAxisUtils.getMonthWeeksUtils(value.toInt())
+            }
+        }
+        val yVals1: MutableList<BarEntry> = ArrayList()
+        var j = 0
+        for (i in list.sortedBy { it.timeStamp }) {
+            j += 1
+            yVals1.add(BarEntry(j.toFloat(), i.steps.toFloat()))
+        }
+        val set1: BarDataSet
+        if (barChart?.data != null && barChart?.data!!.dataSetCount > 0) {
+            set1 = barChart?.data!!.getDataSetByIndex(0) as BarDataSet
+            set1.values = yVals1
+            set1.setDrawValues(false)
+            barChart?.data!!.notifyDataChanged()
+            barChart?.notifyDataSetChanged()
+        } else {
+            set1 = BarDataSet(yVals1, "")
+            set1.setDrawValues(false)
+            set1.color = Color.rgb(104, 241, 175)
+            val dataSets = ArrayList<IBarDataSet>()
+            dataSets.add(set1)
+            val data = BarData(dataSets)
+            barChart?.data = data
+        }
+
+        barChart?.barData?.barWidth = 0.3f
+        barChart?.invalidate()
+        barChart?.animateXY(1000, 3000)
+    }
+
+
+
 
 }

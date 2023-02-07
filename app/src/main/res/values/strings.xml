@@ -2,5 +2,6 @@
     <string name="app_name">FitnessApp</string>
     <string name="tab_title_day">Day</string>
     <string name="tab_title_week">Week</string>
+    <string name="tab_title_mont">Month</string>
 
 </resources>
