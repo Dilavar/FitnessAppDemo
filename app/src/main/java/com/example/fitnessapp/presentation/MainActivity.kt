@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import com.example.fitnessapp.R
 import com.example.fitnessapp.common.Constants
+import com.example.fitnessapp.domain.model.Compare
 import com.example.fitnessapp.domain.model.Steps
 import com.example.fitnessapp.domain.utils.XAxisUtils
 import com.example.fitnessapp.presentation.viewmodels.DashBoardActivityViewModel
@@ -180,25 +181,16 @@ class MainActivity : ComponentActivity() {
             j += 1
         }
         val set1: BarDataSet
-        if (barChart?.data != null && barChart?.data!!.dataSetCount > 0) {
-            set1 = barChart?.data!!.getDataSetByIndex(0) as BarDataSet
-            set1.values = yVals1
-            set1.setDrawValues(false)
-            barChart?.data!!.notifyDataChanged()
-            barChart?.notifyDataSetChanged()
-        } else {
-            set1 = BarDataSet(yVals1, "")
-            set1.setDrawValues(false)
 
-            set1.color = Color.rgb(104, 241, 175)
-            val dataSets = ArrayList<IBarDataSet>()
+        set1 = BarDataSet(yVals1, "")
+        set1.setDrawValues(false)
 
-            dataSets.add(set1)
-            val data = BarData(dataSets)
-            barChart?.data = data
-        }
+        set1.color = Color.rgb(104, 241, 175)
+        val dataSets = ArrayList<IBarDataSet>()
 
-
+        dataSets.add(set1)
+        val data = BarData(dataSets)
+        barChart?.data = data
         barChart?.setFitBars(true)
         barChart?.barData?.barWidth = 0.4f
         barChart?.invalidate()
@@ -225,21 +217,15 @@ class MainActivity : ComponentActivity() {
             yVals1.add(BarEntry(j.toFloat(), i.steps.toFloat()))
         }
         val set1: BarDataSet
-        if (barChart?.data != null && barChart?.data!!.dataSetCount > 0) {
-            set1 = barChart?.data!!.getDataSetByIndex(0) as BarDataSet
-            set1.values = yVals1
-            set1.setDrawValues(false)
-            barChart?.data!!.notifyDataChanged()
-            barChart?.notifyDataSetChanged()
-        } else {
-            set1 = BarDataSet(yVals1, "")
-            set1.setDrawValues(false)
-            set1.color = Color.rgb(104, 241, 175)
-            val dataSets = ArrayList<IBarDataSet>()
-            dataSets.add(set1)
-            val data = BarData(dataSets)
-            barChart?.data = data
-        }
+
+        set1 = BarDataSet(yVals1, "")
+        set1.setDrawValues(false)
+        set1.color = Color.rgb(104, 241, 175)
+        val dataSets = ArrayList<IBarDataSet>()
+        dataSets.add(set1)
+        val data = BarData(dataSets)
+        barChart?.data = data
+
 
         barChart?.barData?.barWidth = 0.3f
         barChart?.invalidate()
@@ -247,6 +233,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun initMonthBarChart(list: List<Steps>) {
+        initBarChart()
         barChart?.xAxis?.setLabelCount(4, /*force: */true)
         val xl = barChart?.xAxis
         xl?.granularity = 1f
@@ -258,34 +245,40 @@ class MainActivity : ComponentActivity() {
                 return XAxisUtils.getMonthWeeksUtils(value.toInt())
             }
         }
-        val yVals1: MutableList<BarEntry> = ArrayList()
-        var j = 0
-        for (i in list.sortedBy { it.timeStamp }) {
-            yVals1.add(BarEntry(i.week.toFloat(), i.steps.toFloat()))
-        }
-        val set1: BarDataSet
-        if (barChart?.data != null && barChart?.data!!.dataSetCount > 0) {
-            set1 = barChart?.data!!.getDataSetByIndex(0) as BarDataSet
-            set1.values = yVals1
-            set1.setDrawValues(false)
-            barChart?.data!!.notifyDataChanged()
-            barChart?.notifyDataSetChanged()
-        } else {
-            set1 = BarDataSet(yVals1, "")
-            set1.setDrawValues(false)
-            set1.color = Color.rgb(104, 241, 175)
-            val dataSets = ArrayList<IBarDataSet>()
-            dataSets.add(set1)
-            val data = BarData(dataSets)
-            barChart?.data = data
-        }
 
+        var max = list?.reduce(Compare::max)
+        var min = list?.reduce(Compare::min)
+
+        val dataSets = ArrayList<IBarDataSet>()
+
+        for (step in list) {
+            val week: MutableList<BarEntry> = ArrayList()
+            week.add(BarEntry(step.week.toFloat(), step.steps.toFloat()))
+
+            if (step.steps == max.steps) {
+                var set = BarDataSet(week, "MAX")
+                set.setColors(Color.GREEN)
+                set.setDrawValues(false)
+                dataSets.add(set)
+            } else if (step.steps == min.steps) {
+                var set = BarDataSet(week, "MIN")
+                set.setColors(Color.RED)
+                set.setDrawValues(false)
+                dataSets.add(set)
+            } else {
+                var set = BarDataSet(week, "")
+                set.setColors(Color.CYAN)
+                set.setDrawValues(false)
+                dataSets.add(set)
+            }
+
+        }
+        val data = BarData(dataSets)
+        barChart?.data = data
         barChart?.barData?.barWidth = 0.3f
         barChart?.invalidate()
         barChart?.animateXY(1000, 3000)
     }
-
-
 
 
 }
